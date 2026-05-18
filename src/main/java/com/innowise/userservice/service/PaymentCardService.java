@@ -7,6 +7,7 @@ import com.innowise.userservice.repository.UserRepository;
 import com.innowise.userservice.repository.specification.PaymentCardSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,12 +17,13 @@ public class PaymentCardService {
     private PaymentCardRepository paymentCardRepository;
     private static final int MAX_CARDS_PER_USER = 5;
 
-    public PaymentCard createCard(Long userId, PaymentCard card){
+    @Transactional
+    public PaymentCard createCard(Long userId, PaymentCard card) {
         User user = userRepository.findById(userId).
                 orElseThrow(() -> new RuntimeException("User not found"));
 
         int currentCardCount = paymentCardRepository.countCardsByUserId(userId);
-        if (currentCardCount >= MAX_CARDS_PER_USER){
+        if (currentCardCount >= MAX_CARDS_PER_USER) {
             throw new IllegalArgumentException("User with id" + userId
                     + "already has the maximum number of cards");
         }
@@ -44,6 +46,7 @@ public class PaymentCardService {
         return paymentCardRepository.findPaymentCardByUserId(userId);
     }
 
+    @Transactional
     public PaymentCard updateCard(Long id, PaymentCard cardDetails) {
         PaymentCard existingCard = getCardById(id);
         existingCard.setNumber(cardDetails.getNumber());
@@ -52,6 +55,7 @@ public class PaymentCardService {
         return paymentCardRepository.save(existingCard);
     }
 
+    @Transactional
     public void changeActiveStatus(Long id, boolean active) {
         if (!paymentCardRepository.existsById(id)) {
             throw new RuntimeException("Payment card not found");
