@@ -19,5 +19,4 @@ public interface UserRepository
     @Modifying
     @Query("UPDATE User u SET u.active = :active WHERE u.id = :id")
     void updateActiveStatus(@Param("id") Long id, @Param("active") boolean active);
-
 }
