@@ -7,6 +7,9 @@ import com.innowise.userservice.repository.UserRepository;
 import com.innowise.userservice.repository.specification.UserSpecification;
 import com.innowise.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,9 +35,17 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @Cacheable(value = "users", key = "#id")
     public User getUserById(Long id) {
-        return userRepository.findById(id)
+
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with id: " + id + " not found"));
+
+        if (user.getPaymentCards() != null) {
+            user.getPaymentCards().size();
+        }
+
+        return user;
     }
 
     public Page<User> getAllUsers(String name, String surname, Pageable pageable) {
@@ -42,17 +53,25 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll(spec, pageable);
     }
 
+    @CachePut(value = "users", key = "#id")
     @Transactional
     public User updateUser(Long id, User userDetails) {
-        User existingUser = getUserById(id);
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User with id:" + id + " not found"));
+
         existingUser.setName(userDetails.getName());
         existingUser.setSurname(userDetails.getSurname());
         existingUser.setBirthDate(userDetails.getBirthDate());
         existingUser.setEmail(userDetails.getEmail());
 
-        return userRepository.save(existingUser);
+        User updated = userRepository.save(existingUser);
+        if (updated.getPaymentCards() != null) {
+            updated.getPaymentCards().size();
+        }
+        return updated;
     }
 
+    @CacheEvict(value = "users", key = "#id")
     @Transactional
     public void changeActiveStatus(Long id, boolean active) {
         if (!userRepository.existsById(id)) {

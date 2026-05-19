@@ -9,6 +9,7 @@ import com.innowise.userservice.repository.UserRepository;
 import com.innowise.userservice.repository.specification.PaymentCardSpecification;
 import com.innowise.userservice.service.PaymentCardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class PaymentCardServiceImpl implements PaymentCardService {
     private final PaymentCardRepository paymentCardRepository;
     private static final int MAX_CARDS_PER_USER = 5;
 
+    @CacheEvict(value = "users", key = "#userId")
     @Transactional
     public PaymentCard createCard(Long userId, PaymentCard card) {
         User user = userRepository.findById(userId).
@@ -53,20 +55,27 @@ public class PaymentCardServiceImpl implements PaymentCardService {
         return paymentCardRepository.findPaymentCardByUserId(userId);
     }
 
+    @CacheEvict(value = "users", key = "#result.user.id")
     @Transactional
     public PaymentCard updateCard(Long id, PaymentCard cardDetails) {
         PaymentCard existingCard = getCardById(id);
         existingCard.setNumber(cardDetails.getNumber());
         existingCard.setHolder(cardDetails.getHolder());
         existingCard.setExpirationDate(cardDetails.getExpirationDate());
+
         return paymentCardRepository.save(existingCard);
     }
 
     @Transactional
     public void changeActiveStatus(Long id, boolean active) {
-        if (!paymentCardRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Payment card not found");
-        }
+        PaymentCard existingCard = getCardById(id);
         paymentCardRepository.updateActiveStatus(id, active);
+
+        evictUserCache(existingCard.getUser().getId());
+    }
+
+    @CacheEvict(value = "users", key = "#userId")
+    public void evictUserCache(Long userId) {
+        // Метод пустой, аннотация сделает всю работу сама
     }
 }
