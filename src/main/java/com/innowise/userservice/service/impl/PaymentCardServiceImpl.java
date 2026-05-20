@@ -41,16 +41,19 @@ public class PaymentCardServiceImpl implements PaymentCardService {
         return paymentCardRepository.save(card);
     }
 
+    @Transactional(readOnly = true)
     public PaymentCard getCardById(Long id) {
         return paymentCardRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Card with id " + id + " not found"));
     }
 
+    @Transactional(readOnly = true)
     public Page<PaymentCard> getAllCards(String holder, Pageable pageable) {
         var spec = PaymentCardSpecification.filterByHolder(holder);
         return paymentCardRepository.findAll(spec, pageable);
     }
 
+    @Transactional(readOnly = true)
     public List<PaymentCard> getCardsByUserId(Long userId) {
         return paymentCardRepository.findPaymentCardByUserId(userId);
     }
@@ -76,6 +79,5 @@ public class PaymentCardServiceImpl implements PaymentCardService {
 
     @CacheEvict(value = "users", key = "#userId")
     public void evictUserCache(Long userId) {
-        // Метод пустой, аннотация сделает всю работу сама
     }
 }

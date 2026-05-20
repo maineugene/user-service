@@ -2,8 +2,8 @@ package com.innowise.userservice.dto;
 
 import lombok.Data;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 public class PaymentCardResponseDto {
@@ -14,6 +14,6 @@ public class PaymentCardResponseDto {
     private String holder;
     private LocalDate expirationDate;
     private boolean active;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 }

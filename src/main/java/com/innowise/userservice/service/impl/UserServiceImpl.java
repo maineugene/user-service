@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(value = "users", key = "#id")
     public User getUserById(Long id) {
 
@@ -48,6 +49,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Transactional(readOnly = true)
     public Page<User> getAllUsers(String name, String surname, Pageable pageable) {
         var spec = UserSpecification.filterByFirstNameAndSurname(name, surname);
         return userRepository.findAll(spec, pageable);
