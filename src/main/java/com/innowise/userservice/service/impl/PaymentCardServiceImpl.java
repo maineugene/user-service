@@ -61,7 +61,8 @@ public class PaymentCardServiceImpl implements PaymentCardService {
     @CacheEvict(value = "users", key = "#result.user.id")
     @Transactional
     public PaymentCard updateCard(Long id, PaymentCard cardDetails) {
-        PaymentCard existingCard = getCardById(id);
+        PaymentCard existingCard = paymentCardRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Card with id " + id + " not found"));
         existingCard.setNumber(cardDetails.getNumber());
         existingCard.setHolder(cardDetails.getHolder());
         existingCard.setExpirationDate(cardDetails.getExpirationDate());
@@ -71,7 +72,8 @@ public class PaymentCardServiceImpl implements PaymentCardService {
 
     @Transactional
     public void changeActiveStatus(Long id, boolean active) {
-        PaymentCard existingCard = getCardById(id);
+        PaymentCard existingCard = paymentCardRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Card with id " + id + " not found"));
         paymentCardRepository.updateActiveStatus(id, active);
 
         evictUserCache(existingCard.getUser().getId());

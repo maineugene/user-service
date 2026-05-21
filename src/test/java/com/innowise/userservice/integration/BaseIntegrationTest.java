@@ -20,14 +20,20 @@ public class BaseIntegrationTest {
     }
 
     @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
+    static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
             .withDatabaseName("users_db_test")
             .withUsername("test_user")
-            .withPassword("test_pass");
+            .withPassword("test_pass")
+            .withReuse(true);
 
     @Container
-    static GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:7-alpine"))
-            .withExposedPorts(6379);
+    static final GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:7-alpine"))
+            .withExposedPorts(6379)
+            .withReuse(true);
+
+    static {
+        System.setProperty("testcontainers.reuse.enable", "true");
+    }
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
