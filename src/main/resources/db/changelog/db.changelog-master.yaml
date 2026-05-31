@@ -3,3 +3,5 @@ databaseChangeLog:
       file: db/changelog/changesets/001-create-users.yaml
   - include:
       file: db/changelog/changesets/002-create-payment-cards.yaml
+  - include:
+      file: db/changelog/changesets/003-fix-birthdate-not-null.yaml

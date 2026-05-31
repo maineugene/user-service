@@ -75,7 +75,7 @@ class PaymentCardServiceImplTest {
     void createCard_WithValidData_ShouldSaveAndReturnCard() {
         PaymentCard newCard = new PaymentCard();
         when(userRepository.findById(1L)).thenReturn(Optional.of(sampleUser));
-        when(paymentCardRepository.countCardsByUserId(1L)).thenReturn(3); // Меньше 5
+        when(paymentCardRepository.countCardsByUserId(1L)).thenReturn(3);
         when(paymentCardRepository.save(any(PaymentCard.class))).thenReturn(sampleCard);
 
         PaymentCard created = paymentCardService.createCard(1L, newCard);

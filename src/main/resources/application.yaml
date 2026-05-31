@@ -12,7 +12,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
 
   cache:
     type: redis
@@ -35,6 +34,8 @@ spring:
     redis:
       host: ${REDIS_HOST_NAME:localhost}
       port: ${REDIS_PORT_NUMBER:6379}
+  jpa:
+    show-sql: true
 
 ---
 
@@ -51,3 +52,5 @@ spring:
     redis:
       host: ${REDIS_HOST_NAME:redis-cache}
       port: ${REDIS_PORT_NUMBER:6379}
+  jpa:
+    show-sql: false

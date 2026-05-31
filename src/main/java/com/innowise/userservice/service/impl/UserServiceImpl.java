@@ -6,6 +6,7 @@ import com.innowise.userservice.model.User;
 import com.innowise.userservice.repository.UserRepository;
 import com.innowise.userservice.repository.specification.UserSpecification;
 import com.innowise.userservice.service.UserService;
+import com.innowise.userservice.util.Constant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -20,14 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private static final int MAX_CARDS_PER_USER = 5;
 
-    @Transactional
     public User createUser(User user) {
         if (user.getPaymentCards() != null) {
-            if (user.getPaymentCards().size() > MAX_CARDS_PER_USER) {
-                throw new BusinessLogicException("User can not have more than"
-                        + MAX_CARDS_PER_USER + "cards");
+            if (user.getPaymentCards().size() > Constant.MAX_CARDS_PER_USER) {
+                throw new BusinessLogicException("User can not have more than "
+                        + Constant.MAX_CARDS_PER_USER + " cards");
             }
             user.getPaymentCards().forEach(card -> card.setUser(user));
         }
@@ -35,7 +34,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    @Transactional(readOnly = true)
     @Cacheable(value = "users", key = "#id")
     public User getUserById(Long id) {
 
@@ -49,7 +47,6 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    @Transactional(readOnly = true)
     public Page<User> getAllUsers(String name, String surname, Pageable pageable) {
         var spec = UserSpecification.filterByFirstNameAndSurname(name, surname);
         return userRepository.findAll(spec, pageable);
@@ -59,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User updateUser(Long id, User userDetails) {
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User with id:" + id + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User with id: " + id + " not found"));
 
         existingUser.setName(userDetails.getName());
         existingUser.setSurname(userDetails.getSurname());
@@ -77,7 +74,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void changeActiveStatus(Long id, boolean active) {
         if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException("User with id:" + id + "not found");
+            throw new ResourceNotFoundException("User with id: " + id + " not found");
         }
         userRepository.updateActiveStatus(id, active);
     }
