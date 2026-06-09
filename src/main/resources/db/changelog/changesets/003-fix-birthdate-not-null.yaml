@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260531
+      author: evgeniy
+      changes:
+        - addNotNullConstraint:
+            tableName: users
+            columnName: birth_date
+            columnDataType: DATE

@@ -1,3 +1,56 @@
 spring:
   application:
     name: userservice
+
+  profiles:
+    active: local
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000
+      cache-null-values: false
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/user_service_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST_NAME:localhost}
+      port: ${REDIS_PORT_NUMBER:6379}
+  jpa:
+    show-sql: true
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://postgres-db:5432/user_service_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST_NAME:redis-cache}
+      port: ${REDIS_PORT_NUMBER:6379}
+  jpa:
+    show-sql: false
