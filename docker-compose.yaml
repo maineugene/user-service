@@ -30,8 +30,8 @@ services:
       - DB_URL=jdbc:postgresql://postgres-db:5432/${DB_NAME}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
-      - REDIS_HOST=${REDIS_HOST_NAME}
-      - REDIS_PORT=${REDIS_PORT_NUMBER}
+      - REDIS_HOST_NAME=${REDIS_HOST_NAME}
+      - REDIS_PORT_NUMBER=${REDIS_PORT_NUMBER}
     depends_on:
       - postgres-db
       - redis-cache

@@ -36,8 +36,8 @@ jobs:
       - name: Build and Test with Maven
         run: mvn clean verify
         env:
-          SPRING_DATA_REDIS_HOST: localhost
-          SPRING_DATA_REDIS_PORT: 6379
+          REDIS_HOST_NAME: localhost
+          REDIS_PORT_NUMBER: 6379
 
       - name: SonarCloud Code Analysis
         env:
